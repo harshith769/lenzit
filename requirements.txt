@@ -3,3 +3,9 @@ fastapi
 uvicorn
 python-multipart
 numpy
+torch
+torchvision
+open_clip_torch
+scikit-learn
+yacs
+tqdm
