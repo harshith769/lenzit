@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+# model weights and raw data never go in git (TruFor licence, size)
+*.pth
+*.pt
+*.ckpt
+*.safetensors
+weights/
+data/
+node_modules/
+.next/
