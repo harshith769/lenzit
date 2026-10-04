@@ -11,3 +11,4 @@ weights/
 data/
 node_modules/
 .next/
+*:Zone.Identifier
