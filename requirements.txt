@@ -1,11 +1,4 @@
-pillow
-fastapi
-uvicorn
-python-multipart
-numpy
-torch
-torchvision
-open_clip_torch
-scikit-learn
-yacs
-tqdm
+-r requirements/ml.txt
+-r requirements/api.txt
+-r requirements/security.txt
+pytest
