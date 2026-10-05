@@ -6,3 +6,4 @@ open_clip_torch
 scikit-learn
 yacs
 tqdm
+timm
