@@ -1,0 +1,2 @@
+pillow
+# optional: pillow-heif  (lets redteam/build_labels.py read EXIF from HEIC files)
