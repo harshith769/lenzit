@@ -1,7 +1,8 @@
 """Single integration point: the API calls analyse(); everything else in pipeline/ is internal.
 
 Real signals so far: S2 global_synthetic (set LENZIT_S2_MODE=off to use its stub, e.g. in light tests).
-Still stubs: provenance (S1), local_edit (S3), reference (S4), plausibility (S5); fusion is a plain
+Also real: S4 reference (LENZIT_S4_MODE=off for its stub).
+Still stubs: provenance (S1), local_edit (S3), plausibility (S5); fusion is a plain
 average until pipeline/fusion.py lands (Oct 7). The returned keys are the frozen contract.
 """
 from __future__ import annotations
@@ -13,11 +14,11 @@ import time
 
 from PIL import Image
 
-from . import s2_global
+from . import s2_global, s4_reference
 from .canonical import canonicalise
 from .stubs import run_stub
 
-MODEL_VERSION = "lz-2026.10.05-s2v1"
+MODEL_VERSION = "lz-2026.10.05-s2v1-s4v1"
 SIGNALS = ["provenance", "global_synthetic", "local_edit", "reference", "plausibility"]
 
 
@@ -26,6 +27,8 @@ def _signals(ev, ref, claim):
     for name in SIGNALS:
         if name == "global_synthetic" and os.environ.get("LENZIT_S2_MODE", "on") == "on":
             out.append(s2_global.run(ev, ref, claim))
+        elif name == "reference" and os.environ.get("LENZIT_S4_MODE", "on") == "on":
+            out.append(s4_reference.run(ev, ref, claim))
         else:
             out.append(run_stub(name, ev, ref, claim))
     return out
