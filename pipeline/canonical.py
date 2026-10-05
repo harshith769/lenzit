@@ -6,6 +6,12 @@ aspect ratio and encoder fingerprints cannot leak the label. S1 reads metadata B
 from io import BytesIO
 from PIL import Image, ImageOps
 
+try:  # iPhone photos are HEIC by default
+    import pillow_heif
+    pillow_heif.register_heif_opener()
+except ImportError:
+    pass
+
 LONG_SIDE, SHORT_SIDE = 1024, 768   # 4:3
 JPEG_QUALITY = 90
 
