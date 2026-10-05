@@ -13,3 +13,5 @@ node_modules/
 .next/
 *:Zone.Identifier
 bench/features/
+bench/labels_fraudbench.csv
+bench/results/

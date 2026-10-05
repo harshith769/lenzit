@@ -43,3 +43,13 @@ def clip_features(img: Image.Image) -> np.ndarray:
     f = model.encode_image(batch)
     f = f / f.norm(dim=-1, keepdim=True)
     return f.mean(0).float().cpu().numpy()
+
+
+@torch.no_grad()
+def clip_features_batch(imgs: list[Image.Image]) -> np.ndarray:
+    """Same as clip_features() for several canonical images in one GPU call. Returns (N, 768)."""
+    model = _load()
+    crops = [_to_tensor(c) for img in imgs for c in five_crops(img)]
+    f = model.encode_image(torch.stack(crops).to(DEVICE))
+    f = f / f.norm(dim=-1, keepdim=True)
+    return f.view(len(imgs), 5, -1).mean(1).float().cpu().numpy()
