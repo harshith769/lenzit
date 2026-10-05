@@ -13,6 +13,7 @@ def _jpeg() -> bytes:
 
 def test_analyse_contract(monkeypatch):
     monkeypatch.setenv("LENZIT_S2_MODE", "off")  # contract only; no model download needed
+    monkeypatch.setenv("LENZIT_S4_MODE", "off")
     r = analyse(_jpeg(), _jpeg(), "Mug arrived with a cracked handle")
     assert r["verdict"] in {"likely_genuine", "needs_verification", "likely_manipulated"}
     assert 0.0 <= r["risk_score"] <= 1.0

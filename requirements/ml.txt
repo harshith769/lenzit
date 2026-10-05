@@ -8,3 +8,4 @@ yacs
 tqdm
 timm
 pillow-heif
+opencv-python-headless
