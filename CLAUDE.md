@@ -1,7 +1,7 @@
 # Lenzit (ForgeHacks 2026) - rules for every Claude Code session
 
 Lenzit checks whether a refund-claim photo is genuine evidence, using the seller's reference photo.
-Full plan: the Lenzit Source of Truth doc; per-person work briefs for Sriman and Hotrish.
+Full plan: the Lenzit Source of Truth doc; the 2-person final plan (Lenzit_Final_Plan_2person_v4.md); Hotrish is no longer on the team.
 
 ## Ownership (edit ONLY your own paths; ask the owner for anything else)
 - Harshith (ML, API, integration owner): pipeline/base.py, pipeline/run.py, pipeline/stubs.py,
