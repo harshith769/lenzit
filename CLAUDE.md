@@ -4,14 +4,14 @@ Lenzit checks whether a refund-claim photo is genuine evidence, using the seller
 Full plan: the Lenzit Source of Truth doc; per-person work briefs for Sriman and Hotrish.
 
 ## Ownership (edit ONLY your own paths; ask the owner for anything else)
-- Harshith (ML, integration owner): pipeline/base.py, pipeline/run.py, pipeline/stubs.py,
-  pipeline/canonical.py, pipeline/clip_features.py, pipeline/s2_global.py, pipeline/s4_reference.py,
-  pipeline/s5_plausibility.py, pipeline/fusion.py, bench/*.py, docs/results.md, requirements/ml.txt, tests/ml/
-- Sriman (Security & Data): pipeline/s1_provenance.py, pipeline/s7_recapture.py, security/, redteam/,
+- Harshith (ML, API, integration owner): pipeline/base.py, pipeline/run.py, pipeline/stubs.py,
+  pipeline/canonical.py, pipeline/clip_features.py, pipeline/s2_global.py, pipeline/s3_local.py,
+  pipeline/s4_reference.py, pipeline/s5_plausibility.py, pipeline/fusion.py, bench/*.py, docs/results.md,
+  requirements/ml.txt, tests/ml/, api/, serving/, scripts/deploy_*, docs/api_contract.md, README.md,
+  requirements/api.txt, tests/api/
+- Sriman (Security, Data, Web): pipeline/s1_provenance.py, pipeline/s7_recapture.py, security/, redteam/,
   bench/labels.csv, docs/threat_model.md, docs/security_checklist.md, docs/redteam_results.md,
-  docs/LICENSES.md, requirements/security.txt, tests/security/
-- Hotrish (Product): api/, web/, serving/, demo/, pipeline/s3_local.py, scripts/deploy_*,
-  docs/api_contract.md, README.md, requirements/api.txt, tests/api/
+  docs/LICENSES.md, requirements/security.txt, tests/security/, web/, demo/
 - Shared (PR approved by Harshith): CLAUDE.md, .gitignore, requirements.txt, .env.example, pytest.ini,
   pipeline/__init__.py
 
