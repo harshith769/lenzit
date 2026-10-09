@@ -1,0 +1,9 @@
+{
+  "version": "decision-v1-2026-10-10",
+  "risk": "global_synthetic (S2) score",
+  "t_likely_manipulated": 0.9834,
+  "t_needs_verification": 0.3822,
+  "s4_wrong_item_same_below": 0.2,
+  "note": "S2 thresholds = 95th / 80th percentile of out-of-fold S2 scores on real-damage photos (all variants); S4 rule floors needs_verification; S3 heatmap only",
+  "measured_on": "Lenzit-Bench v1 (FraudBench-derived, CC BY-NC-SA 4.0)"
+}
