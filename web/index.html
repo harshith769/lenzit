@@ -137,6 +137,37 @@ table.m td.num{font-weight:800;font-size:18px;white-space:nowrap}
 footer{padding:30px 0 50px;border-top:1px solid var(--line);font-size:14px;color:var(--slate)}
 footer p{max-width:80ch;margin:0 0 8px}
 
+
+.facts3{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-bottom:26px}
+.facts3 .big{font-size:34px;font-weight:800;letter-spacing:-.03em;line-height:1.05;display:block;margin-bottom:6px}
+.facts3 p{margin:0;color:var(--slate);font-size:15px}
+.src{font-size:13px;color:var(--slate)}
+.incidents{width:100%;max-width:960px;border-collapse:collapse;font-size:15px;margin-top:6px}
+.incidents td,.incidents th{border-bottom:1px solid var(--line);padding:9px 10px;text-align:left;vertical-align:top}
+.incidents th{font-size:14px;color:var(--slate);font-weight:600}
+ol.flow{list-style:none;counter-reset:f;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;padding:0;margin:0 0 22px}
+ol.flow li{counter-increment:f;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 12px 14px;position:relative;font-size:14px}
+ol.flow li::before{content:counter(f);display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--petrol);color:#fff;font-size:12px;font-weight:700;margin-bottom:8px}
+ol.flow li b{display:block;font-size:15px;margin-bottom:3px}
+ol.flow li span{color:var(--slate)}
+ol.flow li:not(:last-child)::after{content:"";position:absolute;right:-9px;top:22px;width:8px;height:2px;background:#9DA9A2}
+table.cmpt{border-collapse:collapse;width:100%;font-size:14.5px}
+table.cmpt th,table.cmpt td{border-bottom:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}
+table.cmpt th{font-size:13.5px;color:var(--slate);font-weight:600}
+table.cmpt tr.us td{background:#E8F1F0;font-weight:600}
+.y{color:var(--ok);font-weight:700}.n{color:var(--bad);font-weight:700}.pt{color:var(--warn);font-weight:700}
+.scroll{overflow-x:auto}
+.uses{display:grid;grid-template-columns:repeat(2,1fr);gap:22px 34px;max-width:960px}
+.uses h3{font-size:17px;margin:0 0 4px}.uses p{margin:0;color:var(--slate);font-size:15px}
+.uses .st{font-size:13px;font-weight:700;margin-bottom:4px;display:block}
+.st.now{color:var(--ok)}.st.next{color:var(--warn)}
+table.tiers{border-collapse:collapse;width:100%;max-width:960px;font-size:14.5px}
+table.tiers td,table.tiers th{border-bottom:1px solid var(--line);padding:9px 10px;text-align:left;vertical-align:top}
+table.tiers th{font-size:13.5px;color:var(--slate);font-weight:600}
+.road{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;max-width:1000px}
+.road h3{font-size:16px;margin:0 0 8px}.road ul{margin:0;padding-left:18px;color:var(--slate);font-size:15px}.road li{margin-bottom:6px}
+.team{display:flex;flex-wrap:wrap;gap:16px 40px;font-size:15px}.team b{display:block;font-size:16px}
+@media (max-width:860px){ .facts3,.road{grid-template-columns:1fr} ol.flow{grid-template-columns:1fr 1fr} ol.flow li::after{display:none} .uses{grid-template-columns:1fr} }
 @media (max-width:860px){
   .tool,.verdict,.table{grid-template-columns:1fr}
   .lightbox{border-right:0;border-bottom:1px solid var(--line)}
@@ -168,7 +199,7 @@ footer p{max-width:80ch;margin:0 0 8px}
     <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="13.5" cy="13.5" r="9.5" fill="none" stroke="#0E5A61" stroke-width="3"/><path d="M20.5 20.5 28 28" stroke="#18211D" stroke-width="3.4" stroke-linecap="round"/><path d="M9 14l3 3 6-7" fill="none" stroke="#18211D" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
     Lenzit</a>
   <nav class="links" aria-label="Main">
-    <a href="#how">How it works</a><a href="#results">Results</a><a class="opt" href="#limits">Limits</a>
+    <a class="opt" href="#problem">Problem</a><a href="#how">How it works</a><a class="opt" href="#compare">Compare</a><a href="#results">Results</a><a class="opt" href="#roadmap">Roadmap</a>
     <a class="opt" href="/docs">API</a><a href="https://github.com/harshith769/lenzit">GitHub</a>
   </nav>
 </div></header>
@@ -216,18 +247,63 @@ footer p{max-width:80ch;margin:0 0 8px}
   <div id="result" aria-live="polite"></div>
 </main>
 
+<section class="s" id="problem"><div class="wrap">
+  <h2>The problem</h2>
+  <p class="lead">When a refund is granted without the item coming back, the buyer's photo is the only evidence. AI editors now add a convincing crack, dent or stain to any photo in seconds, for free.</p>
+  <div class="facts3">
+    <div><span class="big">9%</span><p>of US retail returns were fraudulent in 2025, out of a projected $849.9B in returns. <a class="src" href="https://cdn.nrf.com/research/2025-retail-returns-landscape">NRF</a></p></div>
+    <div><span class="big">$100B</span><p>of 2025 return losses were preventable fraud and abuse, 14.2% of all returns. <a class="src" href="https://www.businesswire.com/news/home/20260219293604/en/Appriss-Retail-Benchmark-Report-Uncovers-$796B-in-Total-Retail-Loss">Appriss Retail</a></p></div>
+    <div><span class="big">&lt; 50%</span><p>of fake damage photos are spotted by multimodal LLMs on most generators in FraudBench, the first benchmark for this task. <a class="src" href="https://arxiv.org/abs/2605.08820">arXiv 2605.08820</a></p></div>
+  </div>
+  <table class="incidents">
+    <thead><tr><th>Reported in 2026</th><th>What happened</th></tr></thead>
+    <tbody>
+      <tr><td>eBay sellers</td><td>Buyers sent AI-doctored damage photos to get refunds on trading cards. <a class="src" href="https://www.shopifreaks.com/ebay-sellers-warn-of-rising-ai-driven-refund-scams/">Shopifreaks</a></td></tr>
+      <tr><td>US D2C brands</td><td>Fake damage photos in support queues, including the same nick repeated across several boxes. <a class="src" href="https://www.modernretail.co/technology/from-boll-branch-to-bogg-brands-are-battling-a-surge-of-ai-driven-return-fraud/">Modern Retail</a></td></tr>
+      <tr><td>Vinted, Amazon, Fnac</td><td>AI-generated damage images used to claim refunds in Europe. <a class="src" href="https://oecd.ai/en/incidents/2026-03-02-16b3">OECD AI Incidents</a></td></tr>
+      <tr><td>Chinese e-commerce</td><td>A surge of refund claims with AI-generated defect images. <a class="src" href="https://oecd.ai/en/incidents/2026-05-15-2c57">OECD AI Incidents</a></td></tr>
+    </tbody>
+  </table>
+  <p class="lead" style="margin-top:22px">Enterprise fraud suites sell to large retailers. A solo seller on Etsy, eBay, Vinted, Meesho or a Shopify store decides each refund alone, from a photo, under time pressure. Refuse too often and you lose honest customers; refund everything and you fund the fraud. Lenzit is built for that seller.</p>
+</div></section>
+
 <section class="s" id="how"><div class="wrap">
   <h2>How it works</h2>
-  <p class="lead">Each check can be fooled on its own, so Lenzit runs independent ones and combines them with fixed, measured rules.</p>
+  <p class="lead">Each check can be fooled on its own, so Lenzit runs independent ones on every claim and combines them with fixed, measured rules. One claim takes about 5–12 seconds.</p>
+  <ol class="flow" aria-label="What happens to a claim">
+    <li><b>Upload guard</b><span>File signature, 12 MB and 50 MP limits, decompression-bomb check</span></li>
+    <li><b>Content Credentials</b><span>Read the C2PA manifest and EXIF from the original bytes</span></li>
+    <li><b>Canonicalise</b><span>Same crop, size and JPEG encoding for every photo, so file format can't fool the model</span></li>
+    <li><b>AI-image detector</b><span>CLIP ViT-L/14 features and a head trained on 6 generators</span></li>
+    <li><b>Product match</b><span>DINOv2 similarity, SIFT alignment and a difference map against your photo</span></li>
+    <li><b>Decision</b><span>Verdict, reasons, next step and a printable report</span></li>
+  </ol>
   <div class="how">
     <div><span class="tag">Content Credentials</span><h3>Reads what the file says about itself</h3>
-      <p>ChatGPT and other tools sign their images with C2PA Content Credentials. A file that declares "AI-generated" is flagged, even when the pixels look real. Capture dates after delivery are checked too.</p></div>
+      <p>ChatGPT and other tools sign their images with C2PA Content Credentials. A file that declares "AI-generated" is flagged even when the pixels look real. Capture dates after delivery are checked too.</p></div>
     <div><span class="tag">AI-image detector</span><h3>Tests the pixels</h3>
-      <p>A detector built on CLIP ViT-L/14 and trained on 7,900 photos from six current image generators, with real damaged items as hard examples, so honest buyers pass.</p></div>
+      <p>A detector built on CLIP ViT-L/14, trained on FraudBench's six current generators, with real damaged items as hard examples, so honest buyers pass.</p></div>
     <div><span class="tag">Product match</span><h3>Confirms it's your item</h3>
       <p>DINOv2 similarity and feature alignment against your listing photo catch reused or wrong-item photos, and show where the photo differs.</p></div>
   </div>
-  <p class="decide"><b>Decision.</b> Declared AI generation means likely manipulated. A detector score above the level that only 5% of real-damage photos reach also means likely manipulated, and a moderate score means needs verification. A photo that doesn't match your item always needs verification.</p>
+  <p class="decide"><b>Decision.</b> Declared AI generation means likely manipulated. A detector score above the level only 5% of real-damage photos reach also means likely manipulated; a moderate score means needs verification. A photo that doesn't match your item always needs verification. Lenzit never auto-denies a refund: the strongest outcome is "ask for a fresh photo".</p>
+</div></section>
+
+<section class="s" id="compare"><div class="wrap">
+  <h2>How Lenzit compares</h2>
+  <p class="lead">What a seller can do today, measured against what refund fraud needs. Statements about other approaches come from the FraudBench paper and public product descriptions; we did not benchmark commercial tools.</p>
+  <div class="scroll"><table class="cmpt">
+    <thead><tr><th>Approach</th><th>Uses your product photo</th><th>Works when metadata is stripped</th><th>Tested against real damage</th><th>Explains why</th><th>Usable by a small seller</th></tr></thead>
+    <tbody>
+      <tr><td>Looking at the photo yourself</td><td class="pt">You compare by eye</td><td class="y">Yes</td><td class="n">No</td><td class="pt">Your judgement</td><td class="y">Yes, but slow</td></tr>
+      <tr><td>Asking a chatbot (multimodal LLM)</td><td class="pt">If you upload it</td><td class="y">Yes</td><td class="n">Below 50% fake detection on most generators (FraudBench)</td><td class="pt">Unverifiable text</td><td class="y">Yes</td></tr>
+      <tr><td>Generic AI-image detector</td><td class="n">No</td><td class="y">Yes</td><td class="n">False positives on real damage, inconsistent across generators (FraudBench)</td><td class="n">A score only</td><td class="pt">Some</td></tr>
+      <tr><td>Content Credentials viewer</td><td class="n">No</td><td class="n">No: screenshots and messengers strip it</td><td class="pt">Not a detector</td><td class="y">Yes</td><td class="y">Yes</td></tr>
+      <tr><td>Enterprise fraud suites</td><td class="pt">Account and order signals</td><td class="pt">Not photo-focused</td><td class="pt">Not public</td><td class="pt">Varies</td><td class="n">Sold to large retailers</td></tr>
+      <tr class="us"><td>Lenzit</td><td class="y">Yes</td><td class="y">Yes (66.5% caught, 95% of real damage never marked manipulated)</td><td class="y">Yes: 1,012 real-damage photos are the hard negatives</td><td class="y">Per-signal reasons, difference map, report</td><td class="y">Yes: web page, no setup</td></tr>
+    </tbody>
+  </table></div>
+  <p class="fine" style="margin-top:12px">What's new: Lenzit verifies the claim against the seller's own photo rather than judging pixels alone. The FraudBench authors name claim-conditioned verification as underexplored.</p>
 </div></section>
 
 <section class="s" id="results"><div class="wrap">
@@ -241,9 +317,38 @@ footer p{max-width:80ch;margin:0 0 8px}
       <tr><td>Heavy JPEG compression</td><td class="num">47.7%</td><td>unseen generator, JPEG quality 50</td></tr>
       <tr><td>Wrong item in the photo</td><td class="num">83%</td><td>flagged; 13% of genuine same-item photos are asked to verify</td></tr>
       <tr><td>Untouched ChatGPT downloads</td><td class="num">2 of 2</td><td>flagged through Content Credentials; one had fooled the pixel detector</td></tr>
+      <tr><td>Live end-to-end check</td><td class="num">20 of 20</td><td>processed through the public API; abuse uploads rejected. A functional check, not an accuracy claim</td></tr>
     </tbody>
   </table>
-  <p class="fine" style="margin-top:14px">Full method, confidence intervals and the checks we dropped: <a href="https://github.com/harshith769/lenzit#results-measured-not-promised">README</a>.</p>
+  <p class="fine" style="margin-top:14px">How we kept it honest: file properties alone separate FraudBench's real and fake photos perfectly, so every photo is canonicalised first. A fused model that looked better (78%) was dropped after a fairness check showed the gain was a dataset artefact. Full method: <a href="https://github.com/harshith769/lenzit#results-measured-not-promised">README</a>.</p>
+</div></section>
+
+<section class="s" id="uses"><div class="wrap">
+  <h2>Who it's for</h2>
+  <div class="uses">
+    <div><span class="st now">Available now</span><h3>Independent sellers</h3><p>Check a refund photo on this page before paying out. Send the suggested message when a fresh photo is needed. Print the report for a dispute.</p></div>
+    <div><span class="st now">Available now</span><h3>Marketplaces and support tools</h3><p>The same checks over an HTTP API (<a href="/docs">API docs</a>): one call per claim, a JSON verdict with reasons, and a model version for audit trails.</p></div>
+    <div><span class="st next">Next</span><h3>D2C support teams</h3><p>A Shopify app and a Zendesk or Gorgias macro that check the photo when the ticket arrives.</p></div>
+    <div><span class="st next">Next</span><h3>Delivery, travel and insurance claims</h3><p>The same photo-evidence problem: food delivery refunds, damaged luggage, small insurance claims.</p></div>
+  </div>
+  <p class="fine" style="margin-top:18px">Estimated cost in production: under one US cent per claim on serverless compute (estimate from public price lists, not yet measured at scale).</p>
+</div></section>
+
+<section class="s" id="security"><div class="wrap">
+  <h2>Security and abuse</h2>
+  <p class="lead">Lenzit is itself a target: it accepts files from strangers and fraudsters will probe it. What we defend against today:</p>
+  <table class="tiers">
+    <thead><tr><th>Attack</th><th>What Lenzit does</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>Reusing an old or downloaded photo</td><td>Product match against your photo; capture date vs delivery date</td><td class="y">Live</td></tr>
+      <tr><td>Chat-app AI edit, sent as downloaded</td><td>Content Credentials hard rule, plus the pixel detector</td><td class="y">Live</td></tr>
+      <tr><td>AI edit with metadata stripped, recompressed or screenshotted</td><td>Pixel detector on canonicalised images</td><td class="pt">Partial: small edits can pass</td></tr>
+      <tr><td>Photographing a screen or print of a fake</td><td>Live re-capture with a one-time code</td><td class="n">Roadmap</td></tr>
+      <tr><td>Malicious uploads</td><td>File-signature check, size and pixel limits, decompression-bomb guard, no server-side URL fetching</td><td class="y">Live</td></tr>
+      <tr><td>Flooding and probing</td><td>30 checks an hour per connection, strict security headers and content policy</td><td class="y">Live</td></tr>
+    </tbody>
+  </table>
+  <p class="fine" style="margin-top:12px">Original photos are analysed in memory and not stored. Threat model: <a href="https://github.com/harshith769/lenzit/blob/main/docs/threat_model.md">docs/threat_model.md</a>.</p>
 </div></section>
 
 <section class="s" id="limits"><div class="wrap">
@@ -252,8 +357,28 @@ footer p{max-width:80ch;margin:0 0 8px}
     <li>A screenshot of a small AI edit. The screenshot removes the credentials and the edit is too small for the detector. One sample shows this.</li>
     <li>About 1 in 8 genuine buyers whose photo looks very different from your listing photo is asked to verify.</li>
     <li>It doesn't yet check that the photo shows the damage the buyer describes.</li>
-    <li>It can't see the item itself, so a photo of a different but identical-looking unit passes.</li>
+    <li>A photo of a different but identical-looking unit passes the product match.</li>
+    <li>The detector was trained on public research data (non-commercial licence) and must be retrained before paid use.</li>
   </ul>
+</div></section>
+
+<section class="s" id="roadmap"><div class="wrap">
+  <h2>Roadmap</h2>
+  <div class="road">
+    <div><h3>Next month</h3><ul><li>One-time re-capture link: the buyer photographs the item live, next to a random code</li><li>Claim check: does the photo show the damage the buyer describes</li><li>Local-edit map validated on inpainted fakes</li></ul></div>
+    <div><h3>Next quarter</h3><ul><li>Shopify app and helpdesk macros</li><li>Video evidence and multi-photo claims</li><li>A detector retrained on licensed data, refreshed monthly against new generators</li></ul></div>
+    <div><h3>Later</h3><ul><li>Food delivery, travel and insurance claims</li><li>Repeat-abuse signals across a seller's claims, privacy-preserving</li><li>Verified-capture partnerships with phone makers that sign photos (C2PA)</li></ul></div>
+  </div>
+</div></section>
+
+<section class="s" id="team"><div class="wrap">
+  <h2>Who built it</h2>
+  <p class="lead">Built from scratch during ForgeHacks 2026 (October 4–10), AI + Cybersecurity track. Open source.</p>
+  <div class="team">
+    <div><b>Harshith Raghavapuram</b>ML, API and integration</div>
+    <div><b>Sriman</b>Security, provenance and red team</div>
+    <div><b>Stack</b>PyTorch, open_clip, DINOv2, OpenCV, scikit-learn, c2pa, FastAPI, Modal</div>
+  </div>
 </div></section>
 
 <footer><div class="wrap">
