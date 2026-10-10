@@ -104,7 +104,7 @@ flowchart LR
 ## What works and what doesn't
 
 **Works**
-- Catches about 2 in 3 AI-faked damage photos from known generators, and about 1 in 2 from a generator it never saw, while passing 95% of real-damage photos.
+- Catches about 2 in 3 AI-faked damage photos from known generators, and about 1 in 2 from a generator it never saw, while 95% of real-damage photos are never marked manipulated (about 80% pass outright; the rest are asked for a fresh photo).
 - Our own real photos (an intact and a really dented bottle) both scored S2 0.00–0.01 and passed.
 - ChatGPT downloads with Content Credentials are flagged even when the pixels look real.
 - A wrong-item photo is caught 83% of the time.

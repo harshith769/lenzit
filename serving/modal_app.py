@@ -10,7 +10,7 @@ import os
 
 import modal
 
-MIN_CONTAINERS = int(os.environ.get("LENZIT_MIN_CONTAINERS", "0"))
+MIN_CONTAINERS = int(os.environ.get("LENZIT_MIN_CONTAINERS", "1"))
 
 
 def _download_weights():
