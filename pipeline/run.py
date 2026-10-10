@@ -130,6 +130,8 @@ def _decide(sig: dict[str, SignalResult]) -> tuple[str, float, list[str]]:
         floor("needs_verification", "Content Credentials declare AI editing")
     if a1.get("exif_before_delivery"):
         floor("needs_verification", "photo was taken before the delivery date")
+    if a1.get("c2pa_ai") or a1.get("c2pa_ai_edited") or a1.get("exif_before_delivery"):
+        risk = max(risk, float(sig["provenance"].score))   # hard rules lift the shown risk score
     return verdict, round(min(max(risk, 0.0), 1.0), 3), why
 
 
