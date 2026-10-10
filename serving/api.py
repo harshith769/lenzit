@@ -21,6 +21,7 @@ from pathlib import Path
 from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 from PIL import Image
 
 Image.MAX_IMAGE_PIXELS = 50_000_000            # decompression-bomb guard (raises above 2x this)
@@ -30,6 +31,8 @@ RATE_PER_HOUR = int(os.environ.get("LENZIT_RATE_PER_HOUR", "30"))
 ROOT = Path(__file__).resolve().parents[1]
 
 app = FastAPI(title="Lenzit API", version="1.0")
+if (ROOT / "web" / "demo").is_dir():   # preloaded demo cases (our own photos + one FraudBench example)
+    app.mount("/demo", StaticFiles(directory=ROOT / "web" / "demo"), name="demo")
 _lock = threading.Lock()                       # analyse() is not thread-safe: one claim at a time per container
 _claims: OrderedDict[str, dict] = OrderedDict()
 _hits: dict[str, deque] = defaultdict(deque)
@@ -136,33 +139,53 @@ def index():
 
 FALLBACK = """<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1"><title>Lenzit</title>
-<style>body{font-family:system-ui,sans-serif;max-width:760px;margin:24px auto;padding:0 16px;color:#1b1b1f;background:#fafafa}
+<style>body{font-family:system-ui,sans-serif;max-width:780px;margin:24px auto;padding:0 16px;color:#1b1b1f;background:#fafafa}
 label{display:block;margin:12px 0 4px;font-weight:600}input,textarea,button{font:inherit;width:100%;box-sizing:border-box}
 textarea{min-height:60px}button{margin-top:16px;padding:10px;background:#1b1b1f;color:#fff;border:0;border-radius:6px;cursor:pointer}
 .card{background:#fff;border:1px solid #ddd;border-radius:8px;padding:16px;margin-top:20px}
 .v{font-size:1.4em;font-weight:700}.likely_genuine{color:#1a7f37}.needs_verification{color:#9a6700}.likely_manipulated{color:#cf222e}
 table{width:100%;border-collapse:collapse}td{border-top:1px solid #eee;padding:6px 4px;vertical-align:top}img{max-width:100%;border-radius:6px}
-small{color:#666}</style></head><body>
-<h1>Lenzit</h1><p>Verify the claim, not just the pixels. Upload the buyer's damage photo, the seller's reference photo and the claim.</p>
-<form id="f"><label>Buyer's evidence photo</label><input type="file" name="evidence" accept="image/*" required>
+small{color:#666}.demos{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px}
+.demos button{margin:0;background:#fff;color:#1b1b1f;border:1px solid #bbb;text-align:left;font-size:.92em}
+.demos button b{display:block}.thumbs{display:flex;gap:8px}.thumbs figure{margin:0;flex:1}.thumbs img{max-height:180px;object-fit:cover;width:100%}
+figcaption{font-size:.8em;color:#666}</style></head><body>
+<h1>Lenzit</h1><p><b>Verify the claim, not just the pixels.</b> Checks whether a refund-claim photo is a genuine camera photo or
+AI-made/edited, using the file's Content Credentials, an AI-image detector, and a match against the seller's reference photo.</p>
+<div id="demowrap" class="card" style="display:none"><b>Try a preloaded case (one click)</b><div id="demos" class="demos"></div></div>
+<form id="f" class="card"><b>Or check your own photo</b><label>Buyer's evidence photo</label><input type="file" name="evidence" accept="image/*" required>
 <label>Seller's reference photo (optional)</label><input type="file" name="reference" accept="image/*">
 <label>Claim text</label><textarea name="claim_text" maxlength="500" required>Item arrived damaged</textarea>
 <button>Check this claim</button></form><div id="out"></div>
-<p><small>Verification, not accusation: a "needs verification" result asks the buyer for a fresh photo; it never accuses anyone.
-Evaluation data: FraudBench (CC BY-NC-SA 4.0).</small></p>
+<p><small>Verification, not accusation: "needs verification" asks the buyer for a fresh photo; it never accuses anyone.
+Measured on Lenzit-Bench v1: 66.5% of AI fakes caught at 5% false alarms on real-damage photos (metadata stripped);
+56.3% for a generator the model never saw. Evaluation data: FraudBench (CC BY-NC-SA 4.0).
+<a href="https://github.com/harshith769/lenzit">Code &amp; results</a></small></p>
 <script>
 const f=document.getElementById('f'),out=document.getElementById('out');
 const label={likely_genuine:'Likely genuine',needs_verification:'Needs verification',likely_manipulated:'Likely manipulated'};
-f.onsubmit=async e=>{e.preventDefault();out.innerHTML='<div class="card">Checking… (first check after idle can take ~1 min)</div>';
-const fd=new FormData(f);if(!fd.get('reference')||!fd.get('reference').size)fd.delete('reference');
+const names={provenance:'Content Credentials (S1)',global_synthetic:'AI-image detector (S2)',local_edit:'Local-edit heatmap (S3)',
+reference:'Seller-photo match (S4)',plausibility:'Claim plausibility (S5)'};
+async function check(fd,thumbs){out.innerHTML='<div class="card">Checking… (first check after idle can take ~1 min)</div>';
 try{const r=await fetch('/v1/claims',{method:'POST',body:fd});const j=await r.json();
 if(!r.ok){out.innerHTML='<div class="card">Error: '+(j.detail&&j.detail.message||r.status)+'</div>';return;}
 let rows='';for(const[k,s]of Object.entries(j.signals)){const na=j.unavailable_signals.includes(k);
-rows+=`<tr><td>${k}</td><td>${na?'—':s.score.toFixed(2)}</td><td>${s.reason}</td></tr>`;}
-out.innerHTML=`<div class="card"><div class="v ${j.verdict}">${label[j.verdict]}</div>
-<p>Risk score ${j.risk_score.toFixed(2)} · next step: ${j.next_step.replaceAll('_',' ')} · ${j.latency_ms} ms</p>
-${j.rules_applied.length?'<p>Rules: '+j.rules_applied.join('; ')+'</p>':''}
-${j.artifacts.heatmap_png?'<p><b>Where the photo differs</b></p><img src="data:image/png;base64,'+j.artifacts.heatmap_png+'">':''}
-<table>${rows}</table><p><small>${j.model_version} · claim ${j.claim_id}</small></p></div>`;}
-catch(err){out.innerHTML='<div class="card">Network error: '+err+'</div>';}};
+rows+=`<tr><td>${names[k]||k}</td><td>${na?'—':s.score.toFixed(2)}</td><td>${s.reason}</td></tr>`;}
+const rep=URL.createObjectURL(new Blob([JSON.stringify(j,null,2)],{type:'application/json'}));
+out.innerHTML=`<div class="card">${thumbs||''}<div class="v ${j.verdict}">${label[j.verdict]}</div>
+<p>Risk score ${j.risk_score.toFixed(2)} · next step: ${j.next_step.replaceAll('_',' ')} · ${(j.latency_ms/1000).toFixed(1)} s</p>
+${j.rules_applied.length?'<p>Why: '+j.rules_applied.join('; ')+'</p>':''}
+${j.artifacts.heatmap_png?'<p><b>Where the photo differs from the seller\'s photo</b></p><img src="data:image/png;base64,'+j.artifacts.heatmap_png+'">':''}
+<table>${rows}</table><p><small>${j.model_version} · claim ${j.claim_id} · <a download="lenzit_report_${j.claim_id}.json" href="${rep}">download report (JSON)</a></small></p></div>`;
+out.scrollIntoView({behavior:'smooth'});}
+catch(err){out.innerHTML='<div class="card">Network error: '+err+'</div>';}}
+f.onsubmit=e=>{e.preventDefault();const fd=new FormData(f);if(!fd.get('reference')||!fd.get('reference').size)fd.delete('reference');check(fd);};
+async function blob(u){const r=await fetch(u);return new File([await r.blob()],u.split('/').pop());}
+fetch('/demo/cases.json').then(r=>r.ok?r.json():[]).then(cases=>{if(!cases.length)return;
+document.getElementById('demowrap').style.display='block';const box=document.getElementById('demos');
+cases.forEach(c=>{const b=document.createElement('button');b.innerHTML=`<b>${c.title}</b>${c.note}`;
+b.onclick=async()=>{const fd=new FormData();fd.append('evidence',await blob('/demo/'+c.evidence));
+if(c.reference)fd.append('reference',await blob('/demo/'+c.reference));fd.append('claim_text',c.claim);
+const t=`<div class="thumbs"><figure><img src="/demo/${c.evidence}"><figcaption>Buyer's photo · ${c.claim}</figcaption></figure>`+
+(c.reference?`<figure><img src="/demo/${c.reference}"><figcaption>Seller's reference</figcaption></figure>`:'')+'</div>';
+check(fd,t);};box.appendChild(b);});}).catch(()=>{});
 </script></body></html>"""

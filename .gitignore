@@ -15,3 +15,5 @@ node_modules/
 bench/features/
 bench/labels_fraudbench.csv
 bench/results/
+web/demo/*.jpg
+web/demo/*.png

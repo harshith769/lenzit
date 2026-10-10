@@ -25,7 +25,7 @@ from .base import SignalResult
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 MODEL_NAME = "vit_base_patch14_dinov2.lvd142m"   # Apache-2.0
-SAME_ITEM_T = 0.5     # uncalibrated: fit on redteam/t0_cases.csv once it exists
+SAME_ITEM_T = 0.2   # calibrated on Lenzit-Bench v1 T0 pairs (models/decision_v1.json)
 MIN_INLIERS = 25
 _TF = T.Compose([
     T.Resize((224, 224), interpolation=T.InterpolationMode.BICUBIC),   # whole frame, item never cropped out

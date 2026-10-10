@@ -1,0 +1,37 @@
+[
+  {
+    "title": "Real damage, honest buyer",
+    "note": "Our own photo of a really dented bottle",
+    "evidence": "real_dented.jpg",
+    "reference": "ref.jpg",
+    "claim": "Bottle arrived dented on the side"
+  },
+  {
+    "title": "ChatGPT fake (credentials intact)",
+    "note": "Dent added by ChatGPT; untouched download",
+    "evidence": "chatgpt_fake.png",
+    "reference": "ref.jpg",
+    "claim": "Bottle arrived dented on the side"
+  },
+  {
+    "title": "AI fake, metadata stripped",
+    "note": "FraudBench (qwen-image-2.0-pro), caught by the pixel detector",
+    "evidence": "fb_fake.jpg",
+    "reference": "fb_ref.jpg",
+    "claim": "The clear lid arrived completely cracked across the middle so it won't snap shut anymore."
+  },
+  {
+    "title": "Wrong item in the photo",
+    "note": "Real photo of a different product than the seller's",
+    "evidence": "fb_wrong.jpg",
+    "reference": "fb_wrong_ref.jpg",
+    "claim": "Item arrived damaged"
+  },
+  {
+    "title": "Known limitation",
+    "note": "Same ChatGPT fake as a screenshot: credentials gone",
+    "evidence": "chatgpt_fake_screenshot.png",
+    "reference": "ref.jpg",
+    "claim": "Bottle arrived dented on the side"
+  }
+]
