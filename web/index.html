@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lenzit · Refund photo verification</title>
+<meta name="description" content="Check whether a refund-claim photo is a genuine camera photo or made or edited by AI, against the seller's own product photo.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F4F6F3; --panel:#FFFFFF; --ink:#18211D; --slate:#56625C; --line:#D8DED9; --soft:#EAEEEA;
+  --petrol:#0E5A61; --petrol-ink:#FFFFFF;
+  --ok:#25704A; --ok-bg:#E6F2EB; --warn:#9A5B00; --warn-bg:#FBF0DD; --bad:#B42318; --bad-bg:#FBE9E7;
+  --r-input:6px; --r-panel:12px; --r-img:4px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 16px/1.55 "Schibsted Grotesk",system-ui,sans-serif}
+a{color:var(--petrol)}
+:focus-visible{outline:3px solid #6FB3BA;outline-offset:2px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+
+/* nav */
+header.top{border-bottom:1px solid var(--line);background:var(--paper)}
+header.top .wrap{display:flex;align-items:center;gap:28px;height:60px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;letter-spacing:-.02em;color:var(--ink);text-decoration:none}
+.brand svg{width:26px;height:26px}
+nav.links{display:flex;gap:22px;margin-left:auto;font-size:15px}
+nav.links a{color:var(--slate);text-decoration:none}
+nav.links a:hover{color:var(--ink)}
+
+/* intro */
+.intro{padding:44px 0 24px}
+.intro h1{font-size:clamp(30px,4.4vw,48px);line-height:1.05;letter-spacing:-.03em;font-weight:800;margin:0 0 14px;max-width:16ch}
+.intro p{color:var(--slate);font-size:18px;max-width:62ch;margin:0}
+.facts{display:flex;flex-wrap:wrap;gap:8px 28px;margin-top:20px;font-size:15px;color:var(--slate)}
+.facts b{color:var(--ink);font-weight:700}
+
+/* tool */
+.tool{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:20px;margin:8px 0 40px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-panel);padding:22px}
+.panel h2{font-size:19px;margin:0 0 4px;letter-spacing:-.01em}
+.panel .sub{color:var(--slate);font-size:14px;margin:0 0 16px}
+.drops{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.drop{position:relative;border:1.5px dashed #AEB8B2;border-radius:var(--r-input);background:var(--paper);aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;text-align:center;cursor:pointer;overflow:hidden;padding:10px}
+.drop:hover,.drop.over{border-color:var(--petrol);background:#EDF4F3}
+.drop input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.drop img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.drop .hint{font-size:14px;color:var(--slate)}
+.drop .hint b{display:block;color:var(--ink);font-size:15px;margin-bottom:2px}
+.drop .clear{position:absolute;top:6px;right:6px;z-index:2;background:rgba(24,33,29,.75);color:#fff;border:0;border-radius:4px;font:inherit;font-size:12px;padding:3px 8px;cursor:pointer;display:none}
+.drop.has .clear{display:block}
+.droplabel{font-size:14px;font-weight:600;margin:0 0 6px}
+.row2{display:grid;grid-template-columns:1fr 180px;gap:14px;margin-top:14px}
+label.f{display:block;font-size:14px;font-weight:600;margin-bottom:6px}
+textarea,input[type=date]{width:100%;font:inherit;font-size:15px;color:var(--ink);background:#fff;border:1px solid #B9C3BD;border-radius:var(--r-input);padding:9px 11px}
+textarea{min-height:46px;resize:vertical}
+.go{margin-top:16px;width:100%;font:inherit;font-weight:700;font-size:16px;background:var(--petrol);color:var(--petrol-ink);border:0;border-radius:var(--r-input);padding:13px;cursor:pointer}
+.go:disabled{opacity:.55;cursor:progress}
+.fine{font-size:13px;color:var(--slate);margin:10px 0 0}
+
+.samples{list-style:none;margin:0;padding:0}
+.samples li+li{border-top:1px solid var(--soft)}
+.samples button{display:grid;grid-template-columns:64px 1fr;gap:12px;align-items:center;width:100%;text-align:left;background:none;border:0;padding:10px 4px;font:inherit;color:var(--ink);cursor:pointer;border-radius:6px}
+.samples button:hover{background:var(--paper)}
+.samples img{width:64px;height:48px;object-fit:cover;border-radius:var(--r-img);background:var(--soft)}
+.samples b{display:block;font-size:15px}
+.samples span{font-size:13px;color:var(--slate)}
+
+/* result */
+#result{scroll-margin-top:16px}
+.res{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-panel);overflow:hidden;margin-bottom:48px}
+.verdict{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,360px);gap:24px;padding:26px 26px 22px;border-bottom:1px solid var(--line)}
+.vword{font-size:clamp(34px,5vw,56px);line-height:1;font-weight:800;letter-spacing:-.035em;margin:0 0 10px}
+.v-likely_genuine .vword{color:var(--ok)} .v-needs_verification .vword{color:var(--warn)} .v-likely_manipulated .vword{color:var(--bad)}
+.why{font-size:17px;margin:0 0 14px;max-width:56ch}
+.meter{height:10px;background:var(--soft);border-radius:5px;overflow:hidden;max-width:420px}
+.meter i{display:block;height:100%;border-radius:5px;transition:width .6s ease}
+.v-likely_genuine .meter i{background:var(--ok)} .v-needs_verification .meter i{background:var(--warn)} .v-likely_manipulated .meter i{background:var(--bad)}
+.meta{font-size:13px;color:var(--slate);margin-top:8px}
+.action{border-radius:10px;padding:16px 18px;align-self:start}
+.v-likely_genuine .action{background:var(--ok-bg)} .v-needs_verification .action{background:var(--warn-bg)} .v-likely_manipulated .action{background:var(--bad-bg)}
+.action h3{margin:0 0 6px;font-size:16px}
+.action p{margin:0 0 10px;font-size:14px}
+.action blockquote{margin:0 0 10px;padding:10px 12px;background:#fff;border-radius:6px;font-size:14px;border:1px solid rgba(0,0,0,.06)}
+.btn{font:inherit;font-size:14px;font-weight:600;padding:8px 12px;border-radius:var(--r-input);border:1px solid #9DA9A2;background:#fff;color:var(--ink);cursor:pointer;text-decoration:none;display:inline-block}
+.btn.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+.table{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:0;border-bottom:1px solid var(--line)}
+.lightbox{padding:22px 26px;border-right:1px solid var(--line);background:#E9EDEA}
+.lightbox h3,.refbox h3{font-size:14px;margin:0 0 10px;color:var(--slate);font-weight:600}
+.cmp{position:relative;width:100%;border-radius:var(--r-img);overflow:hidden;background:#cfd6d1;user-select:none;touch-action:none}
+.cmp img{display:block;width:100%;height:100%;object-fit:cover}
+.cmp .top{position:absolute;inset:0;clip-path:inset(0 0 0 var(--cut,50%))}
+.cmp .bar{position:absolute;top:0;bottom:0;left:var(--cut,50%);width:2px;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.25);transform:translateX(-1px)}
+.cmp .knob{position:absolute;top:50%;left:var(--cut,50%);width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.35);display:grid;place-items:center;font-size:13px;font-weight:700;color:var(--ink)}
+.cmp input[type=range]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:ew-resize;margin:0}
+.cmplegend{display:flex;justify-content:space-between;font-size:13px;color:var(--slate);margin-top:8px}
+.refbox{padding:22px 26px}
+.refbox img{width:100%;border-radius:var(--r-img);display:block}
+.refbox p{font-size:14px;color:var(--slate);margin:10px 0 0}
+.noimg{padding:30px;text-align:center;color:var(--slate);font-size:14px;border:1px dashed #B9C3BD;border-radius:var(--r-img)}
+
+.signals{padding:10px 26px 6px}
+.sig{display:grid;grid-template-columns:220px 110px minmax(0,1fr);gap:16px;align-items:start;padding:14px 0;border-top:1px solid var(--soft)}
+.sig:first-child{border-top:0}
+.sig .n{font-weight:700;font-size:15px}
+.sig .n small{display:block;font-weight:400;color:var(--slate);font-size:13px}
+.pill{display:inline-block;font-size:12.5px;font-weight:700;padding:3px 9px;border-radius:999px}
+.p-ok{background:var(--ok-bg);color:var(--ok)} .p-warn{background:var(--warn-bg);color:var(--warn)} .p-bad{background:var(--bad-bg);color:var(--bad)} .p-off{background:var(--soft);color:var(--slate)}
+.sig .r{font-size:15px}
+.sig .sc{display:block;font-size:13px;color:var(--slate);margin-top:4px}
+.foot{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:16px 26px;background:var(--paper)}
+.foot .ids{font-size:13px;color:var(--slate);margin-right:auto}
+
+.loading{padding:26px}
+.loading ul{margin:10px 0 0;padding-left:20px;color:var(--slate)}
+.err{padding:22px 26px;color:var(--bad)}
+
+/* sections */
+section.s{padding:44px 0;border-top:1px solid var(--line)}
+section.s h2{font-size:28px;letter-spacing:-.02em;margin:0 0 8px}
+section.s .lead{color:var(--slate);max-width:64ch;margin:0 0 26px}
+.how{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+.how h3{font-size:17px;margin:0 0 6px}
+.how p{margin:0;color:var(--slate);font-size:15px}
+.how .tag{font-size:13px;font-weight:700;color:var(--petrol);margin-bottom:6px;display:block}
+.decide{margin-top:26px;padding:16px 18px;border-left:3px solid var(--petrol);background:var(--panel);max-width:760px;font-size:15px}
+table.m{border-collapse:collapse;width:100%;max-width:860px;font-size:15px}
+table.m th,table.m td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+table.m th{font-weight:600;color:var(--slate);font-size:14px}
+table.m td.num{font-weight:800;font-size:18px;white-space:nowrap}
+.limits{columns:2;column-gap:40px;max-width:900px;padding-left:18px;margin:0}
+.limits li{break-inside:avoid;margin-bottom:10px}
+footer{padding:30px 0 50px;border-top:1px solid var(--line);font-size:14px;color:var(--slate)}
+footer p{max-width:80ch;margin:0 0 8px}
+
+@media (max-width:860px){
+  .tool,.verdict,.table{grid-template-columns:1fr}
+  .lightbox{border-right:0;border-bottom:1px solid var(--line)}
+  .how{grid-template-columns:1fr}
+  .sig{grid-template-columns:1fr auto;gap:6px 12px}
+  .sig .r{grid-column:1/-1}
+  .limits{columns:1}
+  nav.links a.opt{display:none}
+}
+@media (max-width:520px){
+  nav.links{gap:14px;font-size:14px}
+  header.top .wrap{gap:12px}
+  .drops,.row2{grid-template-columns:1fr}
+  .verdict,.lightbox,.refbox,.signals,.foot{padding-left:18px;padding-right:18px}
+}
+@media (prefers-reduced-motion:reduce){.meter i{transition:none}}
+@media print{
+  header.top,.intro,.tool,section.s,footer,.foot .btn,.action .btn{display:none!important}
+  body{background:#fff}
+  .res{border:0}
+  .printhead{display:block!important;font-size:13px;color:#444;padding:0 26px 10px}
+}
+.printhead{display:none}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="brand" href="/" aria-label="Lenzit home">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="13.5" cy="13.5" r="9.5" fill="none" stroke="#0E5A61" stroke-width="3"/><path d="M20.5 20.5 28 28" stroke="#18211D" stroke-width="3.4" stroke-linecap="round"/><path d="M9 14l3 3 6-7" fill="none" stroke="#18211D" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Lenzit</a>
+  <nav class="links" aria-label="Main">
+    <a href="#how">How it works</a><a href="#results">Results</a><a class="opt" href="#limits">Limits</a>
+    <a class="opt" href="/docs">API</a><a href="https://github.com/harshith769/lenzit">GitHub</a>
+  </nav>
+</div></header>
+
+<main class="wrap">
+  <div class="intro">
+    <h1>Was this damage photo taken, or generated?</h1>
+    <p>Before you refund, Lenzit checks the buyer's photo against your own product photo. It reads the file's Content Credentials, tests the pixels for AI generation, and confirms it's your item.</p>
+    <div class="facts" aria-label="Measured results">
+      <span><b>66.5%</b> of AI fakes caught with metadata stripped</span>
+      <span><b>95%</b> of real-damage photos pass</span>
+      <span><b>56%</b> on an AI generator it never saw</span>
+    </div>
+  </div>
+
+  <div class="tool">
+    <form class="panel" id="f" novalidate>
+      <h2>Check a claim</h2>
+      <p class="sub">Photos are analysed in memory and not stored.</p>
+      <div class="drops">
+        <div><p class="droplabel">Buyer's damage photo</p>
+          <div class="drop" id="d-ev"><input type="file" name="evidence" accept="image/*" aria-label="Buyer's damage photo">
+            <div class="hint"><b>Drop or choose a photo</b>JPEG, PNG, WebP or HEIC, up to 12 MB</div><button type="button" class="clear">Remove</button></div></div>
+        <div><p class="droplabel">Your product photo (optional)</p>
+          <div class="drop" id="d-ref"><input type="file" name="reference" accept="image/*" aria-label="Seller's product photo">
+            <div class="hint"><b>Add your listing photo</b>Lets Lenzit confirm it's the same item</div><button type="button" class="clear">Remove</button></div></div>
+      </div>
+      <div class="row2">
+        <div><label class="f" for="claim">What the buyer says</label>
+          <textarea id="claim" name="claim_text" maxlength="500" required>Item arrived damaged</textarea></div>
+        <div><label class="f" for="dd">Delivered on (optional)</label>
+          <input type="date" id="dd" name="delivery_date"></div>
+      </div>
+      <button class="go" id="go" type="submit">Verify this photo</button>
+      <p class="fine">"Needs verification" asks the buyer for a fresh photo. Lenzit never accuses anyone.</p>
+    </form>
+
+    <aside class="panel" id="samplebox" hidden>
+      <h2>Try a sample claim</h2>
+      <p class="sub">Real photos we took, AI fakes we made, and one case Lenzit gets wrong.</p>
+      <ul class="samples" id="samples"></ul>
+    </aside>
+  </div>
+
+  <div id="result" aria-live="polite"></div>
+</main>
+
+<section class="s" id="how"><div class="wrap">
+  <h2>How it works</h2>
+  <p class="lead">Each check can be fooled on its own, so Lenzit runs independent ones and combines them with fixed, measured rules.</p>
+  <div class="how">
+    <div><span class="tag">Content Credentials</span><h3>Reads what the file says about itself</h3>
+      <p>ChatGPT and other tools sign their images with C2PA Content Credentials. A file that declares "AI-generated" is flagged, even when the pixels look real. Capture dates after delivery are checked too.</p></div>
+    <div><span class="tag">AI-image detector</span><h3>Tests the pixels</h3>
+      <p>A detector built on CLIP ViT-L/14 and trained on 7,900 photos from six current image generators, with real damaged items as hard examples, so honest buyers pass.</p></div>
+    <div><span class="tag">Product match</span><h3>Confirms it's your item</h3>
+      <p>DINOv2 similarity and feature alignment against your listing photo catch reused or wrong-item photos, and show where the photo differs.</p></div>
+  </div>
+  <p class="decide"><b>Decision.</b> Declared AI generation means likely manipulated. A detector score above the level that only 5% of real-damage photos reach also means likely manipulated, and a moderate score means needs verification. A photo that doesn't match your item always needs verification.</p>
+</div></section>
+
+<section class="s" id="results"><div class="wrap">
+  <h2>Measured results</h2>
+  <p class="lead">3,260 test cases from 200 products, scored only by models that never saw that product. The operating point is set so 95% of real-damage photos pass.</p>
+  <table class="m">
+    <thead><tr><th>Test</th><th>Result</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>AI fakes, metadata stripped</td><td class="num">66.5%</td><td>caught (95% CI 43–83%), AUROC 0.914</td></tr>
+      <tr><td>AI generator never seen in training</td><td class="num">56.3%</td><td>average over six generators, worst 31%</td></tr>
+      <tr><td>Heavy JPEG compression</td><td class="num">47.7%</td><td>unseen generator, JPEG quality 50</td></tr>
+      <tr><td>Wrong item in the photo</td><td class="num">83%</td><td>flagged; 13% of genuine same-item photos are asked to verify</td></tr>
+      <tr><td>Untouched ChatGPT downloads</td><td class="num">2 of 2</td><td>flagged through Content Credentials; one had fooled the pixel detector</td></tr>
+    </tbody>
+  </table>
+  <p class="fine" style="margin-top:14px">Full method, confidence intervals and the checks we dropped: <a href="https://github.com/harshith769/lenzit#results-measured-not-promised">README</a>.</p>
+</div></section>
+
+<section class="s" id="limits"><div class="wrap">
+  <h2>What Lenzit doesn't catch yet</h2>
+  <ul class="limits">
+    <li>A screenshot of a small AI edit. The screenshot removes the credentials and the edit is too small for the detector. One sample shows this.</li>
+    <li>About 1 in 8 genuine buyers whose photo looks very different from your listing photo is asked to verify.</li>
+    <li>It doesn't yet check that the photo shows the damage the buyer describes.</li>
+    <li>It can't see the item itself, so a photo of a different but identical-looking unit passes.</li>
+  </ul>
+</div></section>
+
+<footer><div class="wrap">
+  <p>Lenzit was built for ForgeHacks 2026 (AI + Cybersecurity). Evaluation data: FraudBench (CC BY-NC-SA 4.0). The detector is for non-commercial use.</p>
+  <p>Uploads are limited to JPEG, PNG, WebP and HEIC, 12 MB and 50 megapixels, checked by file signature, and to 30 checks an hour. Original photos are not stored.</p>
+</div></footer>
+
+<script>
+const $ = s => document.querySelector(s);
+const VERDICT = {likely_genuine:'Likely genuine', needs_verification:'Needs verification', likely_manipulated:'Likely manipulated'};
+const SIG = {
+  provenance:{n:'Content Credentials', d:'What the file declares about itself'},
+  global_synthetic:{n:'AI-image detector', d:'Pixel statistics vs camera photos'},
+  reference:{n:'Product match', d:'Compared with your listing photo'},
+  local_edit:{n:'Local-edit map', d:'Where an edit may be'},
+  plausibility:{n:'Claim check', d:'Does the photo show the claim'}
+};
+const ORDER = ['provenance','global_synthetic','reference','local_edit','plausibility'];
+const MSG = "Hi, thanks for reporting this. To process your claim, please reply with a new photo of the item taken today, showing the damage, with a note next to it that has today's date and your order number written on it.";
+let files = {evidence:null, reference:null}, urls = {evidence:null, reference:null};
+
+function setupDrop(id, key){
+  const box = $(id), input = box.querySelector('input'), clear = box.querySelector('.clear');
+  const show = f => {
+    files[key] = f; if (urls[key] && urls[key].startsWith('blob:')) URL.revokeObjectURL(urls[key]);
+    box.querySelector('img')?.remove();
+    if (!f){ urls[key] = null; box.classList.remove('has'); return; }
+    urls[key] = URL.createObjectURL(f);
+    const im = new Image(); im.alt = ''; im.src = urls[key]; im.onerror = () => im.remove();
+    box.insertBefore(im, clear); box.classList.add('has');
+  };
+  input.addEventListener('change', () => show(input.files[0] || null));
+  clear.addEventListener('click', e => { e.preventDefault(); input.value=''; show(null); });
+  ['dragenter','dragover'].forEach(t => box.addEventListener(t, e => { e.preventDefault(); box.classList.add('over'); }));
+  ['dragleave','drop'].forEach(t => box.addEventListener(t, () => box.classList.remove('over')));
+  box.addEventListener('drop', e => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) show(f); });
+  return show;
+}
+const setEv = setupDrop('#d-ev','evidence'), setRef = setupDrop('#d-ref','reference');
+
+function esc(s){ return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function status(name, s, off){
+  if (off) return ['Not run','p-off'];
+  if (name === 'provenance') return s >= 0.8 ? ['AI declared','p-bad'] : s >= 0.55 ? ['Check date','p-warn'] : ['Nothing found','p-ok'];
+  if (name === 'global_synthetic') return s >= 0.98 ? ['Strong AI signs','p-bad'] : s >= 0.38 ? ['Some AI signs','p-warn'] : ['Looks like a camera photo','p-ok'];
+  if (name === 'reference') return s >= 0.9 ? ['Different item','p-warn'] : ['Same item','p-ok'];
+  return s >= 0.5 ? ['Flagged','p-warn'] : ['Clear','p-ok'];
+}
+
+function summary(j){
+  if (j.rules_applied && j.rules_applied.length){
+    const r = j.rules_applied[0]; return r.charAt(0).toUpperCase() + r.slice(1) + '.';
+  }
+  const s2 = j.signals.global_synthetic;
+  if (j.verdict === 'likely_genuine') return 'No sign of AI generation or editing was found, and nothing in the file contradicts the claim.';
+  return s2 ? s2.reason + '.' : 'The photo needs a closer look.';
+}
+
+function action(v){
+  if (v === 'likely_genuine') return `<div class="action"><h3>Refund as normal</h3><p>Nothing suggests this photo was made or edited by AI. Treat the claim as you normally would.</p></div>`;
+  const head = v === 'likely_manipulated' ? 'Hold the refund and ask for a fresh photo' : 'Ask the buyer for a fresh photo';
+  const body = v === 'likely_manipulated' ? 'This photo is very likely made or edited by AI. A genuine buyer can easily send a new one.' : 'One check raised a question. A new photo taken today settles it quickly.';
+  return `<div class="action"><h3>${head}</h3><p>${body}</p><blockquote id="msg">${esc(MSG)}</blockquote><button class="btn" type="button" id="copy">Copy message</button></div>`;
+}
+
+function render(j, evURL, refURL, claim){
+  const off = new Set(j.unavailable_signals || []);
+  const pct = Math.round((j.risk_score || 0) * 100);
+  const sigs = ORDER.filter(k => j.signals[k]).map(k => {
+    const s = j.signals[k], [lab, cls] = status(k, s.score, off.has(k));
+    return `<div class="sig"><div class="n">${SIG[k]?.n || k}<small>${SIG[k]?.d || ''}</small></div>
+      <div><span class="pill ${cls}">${lab}</span></div>
+      <div class="r">${esc(s.reason)}${off.has(k) ? '' : `<span class="sc">Score ${s.score.toFixed(2)}</span>`}</div></div>`;
+  }).join('');
+  const heat = j.artifacts && j.artifacts.heatmap_png ? 'data:image/png;base64,' + j.artifacts.heatmap_png : null;
+  const light = heat && evURL
+    ? `<div class="cmp" id="cmp" style="aspect-ratio:4/3"><img id="base" src="${evURL}" alt="Buyer's photo"><img class="top" src="${heat}" alt="Difference map against the listing photo" id="heat">
+        <div class="bar"></div><div class="knob" aria-hidden="true">⇆</div><input type="range" min="0" max="100" value="50" aria-label="Compare photo and difference map"></div>
+       <div class="cmplegend"><span>Buyer's photo</span><span>Differences from your photo</span></div>`
+    : evURL ? `<img src="${evURL}" alt="Buyer's photo" style="width:100%;border-radius:4px;display:block">` : `<div class="noimg">Preview not available for this file type</div>`;
+  const ref = refURL ? `<img src="${refURL}" alt="Your listing photo"><p>Warm areas on the map are where the buyer's photo differs from this one. Background and lighting changes show up too.</p>`
+                     : `<div class="noimg">No listing photo added, so Lenzit couldn't confirm the item.</div>`;
+  const report = URL.createObjectURL(new Blob([JSON.stringify(j, null, 2)], {type:'application/json'}));
+  $('#result').innerHTML = `<article class="res v-${j.verdict}">
+    <div class="printhead">Lenzit verification report · ${new Date().toLocaleString()} · claim ${esc(j.claim_id)}<br>Claim: “${esc(claim)}”</div>
+    <div class="verdict"><div>
+        <p class="vword">${VERDICT[j.verdict]}</p>
+        <p class="why">${esc(summary(j))}</p>
+        <div class="meter" role="img" aria-label="Risk ${pct} out of 100"><i style="width:${Math.max(pct,3)}%"></i></div>
+        <p class="meta">Risk ${pct}/100 · checked in ${(j.latency_ms/1000).toFixed(1)} s</p>
+      </div>${action(j.verdict)}</div>
+    <div class="table"><div class="lightbox"><h3>Buyer's photo</h3>${light}</div><div class="refbox"><h3>Your listing photo</h3>${ref}</div></div>
+    <div class="signals">${sigs}</div>
+    <div class="foot"><span class="ids">Claim ${esc(j.claim_id)} · ${esc(j.model_version)}</span>
+      <a class="btn" download="lenzit-report-${esc(j.claim_id)}.json" href="${report}">Download report</a>
+      <button class="btn primary" type="button" onclick="window.print()">Print report</button></div>
+  </article>`;
+  const heatImg = $('#heat'), cmp = $('#cmp');
+  if (heatImg && cmp){
+    heatImg.onload = () => { cmp.style.aspectRatio = heatImg.naturalWidth + '/' + heatImg.naturalHeight; };
+    cmp.querySelector('input').addEventListener('input', e => cmp.style.setProperty('--cut', e.target.value + '%'));
+  }
+  const c = $('#copy'); if (c) c.onclick = async () => { try { await navigator.clipboard.writeText(MSG); c.textContent = 'Copied'; } catch { c.textContent = 'Select the text to copy'; } };
+  $('#result').scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'});
+}
+
+async function verify(fd, evURL, refURL, claim){
+  const go = $('#go'); go.disabled = true;
+  $('#result').innerHTML = `<article class="res"><div class="loading"><b>Checking the photo…</b><ul>
+    <li>Reading Content Credentials and capture date</li><li>Testing the pixels for AI generation</li><li>Comparing with your listing photo</li></ul>
+    <p class="fine">Usually 3–8 seconds.</p></div></article>`;
+  try {
+    const r = await fetch('/v1/claims', {method:'POST', body:fd});
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok){
+      const m = (j.detail && j.detail.message) || (r.status === 429 ? 'Too many checks from this connection. Try again in an hour.' : 'The check failed (' + r.status + ').');
+      $('#result').innerHTML = `<article class="res"><div class="err"><b>Couldn't check this photo.</b> ${esc(m)}</div></article>`; return;
+    }
+    render(j, evURL, refURL, claim);
+  } catch (e) {
+    $('#result').innerHTML = `<article class="res"><div class="err"><b>Couldn't reach Lenzit.</b> Check your connection and try again.</div></article>`;
+  } finally { go.disabled = false; }
+}
+
+$('#f').addEventListener('submit', e => {
+  e.preventDefault();
+  const claim = $('#claim').value.trim();
+  if (!files.evidence){ $('#result').innerHTML = `<article class="res"><div class="err"><b>Add the buyer's photo first.</b> Drop it in the left box or choose a file.</div></article>`; return; }
+  if (!claim){ $('#claim').focus(); return; }
+  const fd = new FormData(); fd.append('evidence', files.evidence); if (files.reference) fd.append('reference', files.reference);
+  fd.append('claim_text', claim); if ($('#dd').value) fd.append('delivery_date', $('#dd').value);
+  verify(fd, urls.evidence, urls.reference, claim);
+});
+
+async function asFile(path){ const r = await fetch('/demo/' + path); return new File([await r.blob()], path, {type: r.headers.get('content-type') || ''}); }
+
+fetch('/demo/cases.json').then(r => r.ok ? r.json() : []).then(cases => {
+  if (!cases.length) return;
+  $('#samplebox').hidden = false;
+  const ul = $('#samples');
+  cases.forEach(c => {
+    const li = document.createElement('li');
+    li.innerHTML = `<button type="button"><img src="/demo/${esc(c.evidence)}" alt="" loading="lazy"><div><b>${esc(c.title)}</b><span>${esc(c.note)}</span></div></button>`;
+    li.querySelector('button').onclick = async () => {
+      const fd = new FormData(); fd.append('evidence', await asFile(c.evidence));
+      if (c.reference) fd.append('reference', await asFile(c.reference));
+      fd.append('claim_text', c.claim);
+      $('#claim').value = c.claim;
+      verify(fd, '/demo/' + c.evidence, c.reference ? '/demo/' + c.reference : null, c.claim);
+    };
+    ul.appendChild(li);
+  });
+}).catch(() => {});
+</script>
+</body>
+</html>

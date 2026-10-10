@@ -31,6 +31,23 @@ RATE_PER_HOUR = int(os.environ.get("LENZIT_RATE_PER_HOUR", "30"))
 ROOT = Path(__file__).resolve().parents[1]
 
 app = FastAPI(title="Lenzit API", version="1.0")
+CSP = ("default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+       "font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; connect-src 'self' blob:; "
+       "frame-ancestors 'none'; base-uri 'none'; form-action 'self'")
+
+
+@app.middleware("http")
+async def _security_headers(request: Request, call_next):
+    resp = await call_next(request)
+    resp.headers["X-Content-Type-Options"] = "nosniff"
+    resp.headers["X-Frame-Options"] = "DENY"
+    resp.headers["Referrer-Policy"] = "no-referrer"
+    resp.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+    if request.url.path == "/":                       # /docs loads Swagger from a CDN, so CSP only on our page
+        resp.headers["Content-Security-Policy"] = CSP
+    return resp
+
+
 if (ROOT / "web" / "demo").is_dir():   # preloaded demo cases (our own photos + one FraudBench example)
     app.mount("/demo", StaticFiles(directory=ROOT / "web" / "demo"), name="demo")
 _lock = threading.Lock()                       # analyse() is not thread-safe: one claim at a time per container
