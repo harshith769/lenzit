@@ -133,3 +133,10 @@ pip install -r requirements.txt
 uvicorn serving.api:app --port 8000        # open http://localhost:8000
 pytest -q
 ```
+
+## Live end-to-end check (Oct 10, 15:50 IST)
+
+20 photos with metadata stripped, sent to the public API exactly like the web page does (`scripts/live_check.py`):
+10 of 10 AI fakes flagged (3 likely manipulated, 7 needs verification), 5 of 5 real-damage photos passed, and 3 of 5 intact photos passed (one detector false alarm, one wrong-item flag). Median latency was 8.9 s.
+Abuse tests: text file renamed to .jpg was rejected (422), a 13 MB file was rejected (413), empty claim text was rejected (422), and the security headers and CSP are present.
+**This is a functional check, not an accuracy result.** The deployed detector was trained on all of FraudBench, so these images are not unseen by it. Accuracy claims use only the out-of-fold numbers above.

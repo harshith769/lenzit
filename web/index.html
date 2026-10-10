@@ -365,7 +365,7 @@ async function verify(fd, evURL, refURL, claim){
   const go = $('#go'); go.disabled = true;
   $('#result').innerHTML = `<article class="res"><div class="loading"><b>Checking the photo…</b><ul>
     <li>Reading Content Credentials and capture date</li><li>Testing the pixels for AI generation</li><li>Comparing with your listing photo</li></ul>
-    <p class="fine">Usually 3–8 seconds.</p></div></article>`;
+    <p class="fine">Usually 5–12 seconds.</p></div></article>`;
   try {
     const r = await fetch('/v1/claims', {method:'POST', body:fd});
     const j = await r.json().catch(() => ({}));
