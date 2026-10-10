@@ -42,7 +42,7 @@ def _validate(data: bytes, field: str) -> bytes:
             validate_upload(data)
             return data
         except UploadRejected as e:
-            raise HTTPException(422, {"error": "upload_rejected", "field": field, "message": str(e)})
+            raise HTTPException(getattr(e, "status_code", 422), {"error": "upload_rejected", "field": field, "message": str(e)})
     except ImportError:
         pass
     if not data:
