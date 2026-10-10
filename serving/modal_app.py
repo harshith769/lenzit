@@ -25,7 +25,7 @@ image = (
     .apt_install("libgl1", "libglib2.0-0")
     .pip_install("torch", "torchvision", index_url="https://download.pytorch.org/whl/cpu")
     .pip_install("fastapi", "uvicorn", "python-multipart", "pillow", "numpy", "open_clip_torch",
-                 "scikit-learn", "timm", "pillow-heif", "opencv-python-headless")
+                 "scikit-learn", "timm", "pillow-heif", "opencv-python-headless", "c2pa-python")
     .run_function(_download_weights)
     .env({"LENZIT_S2_MODE": "on", "LENZIT_S4_MODE": "on", "LENZIT_S3_MODE": "off"})
     .add_local_python_source("pipeline", "serving", "security")
