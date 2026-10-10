@@ -37,11 +37,37 @@ def _unavailable(name: str, why: str) -> SignalResult:
     return SignalResult(name, 0.5, why, {"available": False})
 
 
+# Fallback until Sriman's pipeline/s1_provenance.py is merged: look for an embedded C2PA manifest and its IPTC
+# digitalSourceType. This only READS the declaration; it does not verify the signature (s1_provenance does).
+_AI_FULL = b"digitalsourcetype/trainedAlgorithmicMedia"
+_AI_EDIT = (b"digitalsourcetype/compositeWithTrainedAlgorithmicMedia", b"digitalsourcetype/algorithmicMedia",
+            b"compositeSynthetic")
+
+
+def _c2pa_scan(data: bytes) -> SignalResult:
+    t0 = time.time()
+    has = b"c2pa" in data
+    full = has and _AI_FULL in data
+    edited = has and not full and any(m in data for m in _AI_EDIT)
+    art = {"c2pa_present": has, "c2pa_ai": full, "c2pa_ai_edited": edited, "signature_verified": False}
+    if full:
+        return SignalResult("provenance", 0.95, "Content Credentials in the file declare the image AI-generated", art,
+                            int((time.time() - t0) * 1000))
+    if edited:
+        return SignalResult("provenance", 0.8, "Content Credentials in the file declare AI editing", art,
+                            int((time.time() - t0) * 1000))
+    if has:
+        return SignalResult("provenance", 0.3, "Content Credentials present, with no AI declaration found", art,
+                            int((time.time() - t0) * 1000))
+    return SignalResult("provenance", 0.3, "No Content Credentials in the file (common: most apps strip them)", art,
+                        int((time.time() - t0) * 1000))
+
+
 def _s1(evidence_bytes: bytes, delivery_date):
     try:
         from . import s1_provenance  # Sriman's module; optional until merged
     except ImportError:
-        return _unavailable("provenance", "Provenance check is not available in this version")
+        return _c2pa_scan(evidence_bytes)
     try:
         return s1_provenance.run(evidence_bytes, delivery_date)
     except Exception as e:  # noqa: BLE001 -- a bonus signal must never break a claim
